@@ -13,6 +13,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
+import java.awt.Color;
+import java.awt.Point;
+import java.util.*;
+
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -94,13 +98,17 @@ public class MusicNotationEditorUI extends JFrame {
         staffPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
                 if (selectedSymbol != null) {
-                    int x = e.getX();
-                    int y = e.getY();
-                    StaffPanel staff = (StaffPanel) e.getSource();
-                    staff.addSymbol(selectedSymbol, x, y);
-                    staff.repaint();
+                    // Determine which StaffPanel is clicked
+                    Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
+                    if (comp instanceof StaffPanel) {
+                        StaffPanel staff = (StaffPanel) comp;
+                        int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
+                        int y = e.getY() - comp.getY(); // Adjust Y coordinate relative to staff
+                        staff.addSymbol(selectedSymbol.clone(), x, y); // Clone again to keep original
+                        staff.repaint();
+                        selectedSymbol = null; // Reset selected symbol
+                    }
                 }
             }
         });
@@ -157,20 +165,27 @@ public class MusicNotationEditorUI extends JFrame {
     // Inner class for representing a staff panel
     private class StaffPanel extends JPanel {
         // Constants for staff dimensions and positions
-        private static final int LINE_GAP = 20; // Vertical gap between staff lines
-        private static final int NUM_LINES = 5; // Number of lines per staff
+        private static final int LINE_GAP = 20;     // Vertical gap between staff lines
+        private static final int NUM_LINES = 5;     // Number of lines per staff
         private static final int STAFF_WIDTH = 730; // Width of each staff
         private static final int STAFF_HEIGHT = NUM_LINES * LINE_GAP; // Height of each staff
         private static final int STAFF_MARGIN = 20; // Margin around each staff
-        private static final int PANEL_WIDTH = 2 * (STAFF_MARGIN + STAFF_WIDTH); // Total panel width
-        private static final int PANEL_HEIGHT = 2 * (STAFF_MARGIN + STAFF_HEIGHT); // Total panel height
+        private static final int PANEL_WIDTH = 2 * (STAFF_MARGIN + STAFF_WIDTH);    // Total panel width
+        private static final int PANEL_HEIGHT = 2 * (STAFF_MARGIN + STAFF_HEIGHT);  // Total panel height
+
+        private List<MusicSymbol> symbols = new ArrayList<>();
+
         
         public void addSymbol(MusicSymbol symbol, int x, int y) {
+            
+            symbol.setPosition(x, y); // Set symbol position
+            symbols.add(symbol);
             // Check the coordinates on the staff to define what letter it is
             // Save that information into an array list that saves both the letter and type of note like (G2, Quarter)
             // Check that the amount of beats has not exceeded measureBeats of 4
             // Add the beats like if it is a quarter note, add measureBeats += 1
             // Draw the note
+            this.repaint();
         }
 
         @Override
@@ -182,6 +197,10 @@ public class MusicNotationEditorUI extends JFrame {
             
             // Draw Bass clef staff
             drawStaff(g, STAFF_MARGIN, 2 * STAFF_MARGIN + STAFF_HEIGHT, STAFF_WIDTH, STAFF_HEIGHT);
+
+            for (MusicSymbol symbol : symbols) {
+                symbol.drawSymbol(g);
+            }
         }
         
         // Method to draw a single staff
@@ -208,6 +227,8 @@ public abstract class MusicSymbol extends JPanel {
     protected int xOffset;
     protected int yOffset;
 
+    protected Point position = new Point(); // Added to track symbol position
+
     public MusicSymbol(int type) {
         this.type = type;
         setPreferredSize(new Dimension(50, 50)); // Adjust size as needed
@@ -217,6 +238,14 @@ public abstract class MusicSymbol extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawSymbol(g);
+    }
+
+    public void setPosition(int x, int y) {
+        this.position.setLocation(x, y);
+    }
+
+    public Point getPosition() {
+        return this.position;
     }
 
     protected abstract void drawSymbol(Graphics g);
@@ -236,7 +265,6 @@ class TrebleClefSymbol extends MusicSymbol {
         GeneralPath path = new GeneralPath();
         
         g2d.draw(path);
-        
     }
 
     @Override
@@ -253,15 +281,25 @@ class WholeNoteSymbol extends MusicSymbol {
 
     @Override
     protected void drawSymbol(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.fill(new Ellipse2D.Double(10, 10, 20, 15));
-        g2d.setColor(getBackground());
-        g2d.fill(new Ellipse2D.Double(12, 12, 16, 11));
+        Graphics2D g2d = (Graphics2D) g.create();
+       // Use symbol's position for drawing
+        int drawX = this.position.x ; // Adjust the 10 to position the note correctly relative to its selection point
+        int drawY = this.position.y ; // Adjust the 10 to position the note correctly on the staff line
+
+        // Drawing the whole note based on the updated position
+        g2d.fill(new Ellipse2D.Double(drawX, drawY, 20, 15));
+        g2d.setColor(Color.WHITE);
+        g2d.fill(new Ellipse2D.Double(drawX + 2, drawY + 2, 16, 11));
+
+        g2d.dispose(); // Dispose of the graphics context copy
+
     }
 
     @Override
     protected MusicSymbol clone() {
-        return new WholeNoteSymbol();
+        WholeNoteSymbol clonedSymbol = new WholeNoteSymbol();
+        clonedSymbol.setPosition(this.position.x, this.position.y); // Copy position
+        return clonedSymbol;
     }
 }
 
