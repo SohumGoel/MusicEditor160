@@ -20,6 +20,8 @@ class EighthNoteSymbol extends MusicSymbol {
 
     @Override
     protected MusicSymbol clone() {
-        return new EighthNoteSymbol();
+        EighthNoteSymbol clonedSymbol = new EighthNoteSymbol();
+        clonedSymbol.setPosition(this.position.x, this.position.y); // Copy position
+        return clonedSymbol;
     }
 }

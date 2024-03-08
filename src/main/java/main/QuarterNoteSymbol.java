@@ -17,6 +17,8 @@ class QuarterNoteSymbol extends MusicSymbol {
 
     @Override
     protected MusicSymbol clone() {
-        return new QuarterNoteSymbol();
+        QuarterNoteSymbol clonedSymbol = new QuarterNoteSymbol();
+        clonedSymbol.setPosition(this.position.x, this.position.y); // Copy position
+        return clonedSymbol;
     }
 }

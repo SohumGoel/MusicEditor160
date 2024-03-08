@@ -11,7 +11,7 @@ class WholeNoteSymbol extends MusicSymbol {
     @Override
     protected void drawSymbol(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
-    // Use symbol's position for drawing
+        // Use symbol's position for drawing
         int drawX = this.position.x ; // Adjust the 10 to position the note correctly relative to its selection point
         int drawY = this.position.y ; // Adjust the 10 to position the note correctly on the staff line
 

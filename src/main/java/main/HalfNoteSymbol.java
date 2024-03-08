@@ -17,6 +17,8 @@ class HalfNoteSymbol extends MusicSymbol {
 
     @Override
     protected MusicSymbol clone() {
-        return new HalfNoteSymbol();
+        HalfNoteSymbol clonedSymbol = new HalfNoteSymbol();
+        clonedSymbol.setPosition(this.position.x, this.position.y); // Copy position
+        return clonedSymbol;
     }
 }

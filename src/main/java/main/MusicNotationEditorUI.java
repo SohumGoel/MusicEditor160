@@ -1,5 +1,6 @@
 package main;
 import java.awt.BorderLayout;
+import javax.swing.*; 
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -11,11 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class MusicNotationEditorUI extends JFrame {
     private JPanel staffPanel;
@@ -76,8 +72,14 @@ public class MusicNotationEditorUI extends JFrame {
         symbolPanel = new JPanel();
         symbolPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         symbolPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        symbolPanel.setPreferredSize(new Dimension(2000, 100)); // You can adjust the width and height as needed
+
         addToSymbolPanel();
         addSymbolPanelListener();
+
+
+        
+
     }
 
     private void addToSymbolPanel() {
