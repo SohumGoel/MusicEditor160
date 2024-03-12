@@ -9,6 +9,8 @@ class EighthNoteSymbol extends MusicSymbol {
         super(5);
         this.position.x = x;
         this.position.y = y;
+        setDuration(0.5); 
+
     }
 
     @Override

@@ -20,6 +20,11 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import main.TrebleClefNotePitchCalculator;
+import main.PitchCalculator;
+
+import javax.sound.midi.*;
+
 
 public class MusicNotationEditorUI extends JFrame {
     private JPanel staffPanel;
@@ -47,10 +52,13 @@ public class MusicNotationEditorUI extends JFrame {
     }
 
     private void initStaffPanel() {
+        PitchCalculator pitchCalculator = new TrebleClefNotePitchCalculator();
+
         staffPanel = new JPanel(new GridLayout(0, 1));
         staffPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+
         for (int i = 0; i < 3; i++) { // Example: 2 pairs of staffs
-            staffPanel.add(new Phrase());
+            staffPanel.add(new Phrase(pitchCalculator));
         }
         addStaffPanelListener();
     }
@@ -78,6 +86,12 @@ public class MusicNotationEditorUI extends JFrame {
                         Phrase staff = (Phrase) comp;
                         int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
                         int y = e.getY() - comp.getY(); // Adjust Y coordinate relative to staff
+
+                        // Print out the pitch before placing the symbol
+                        int pitch = staff.pitchCalculator.calculatePitch(y);
+                        System.out.println("About to add symbol at x=" + x + ", y=" + y + " with calculated MIDI pitch: " + pitch);
+
+
                         staff.addSymbol(selectedSymbol.clone(), x, y); // Clone again to keep original
                         selectedSymbol = null; // Reset selected symbol
                     }
@@ -150,8 +164,11 @@ public class MusicNotationEditorUI extends JFrame {
                 // Toggle play/pause state
                 isPlaying = !isPlaying;
                 if (isPlaying) {
-                    // Start playing
-                    // Implement playback functionality here
+                    for (Component comp : staffPanel.getComponents()) {
+                        if (comp instanceof Phrase) {
+                            ((Phrase) comp).playSymbols();
+                        }
+                    }
                     playPauseButton.setText("Pause");
                 } else {
                     // Pause playback
@@ -169,6 +186,7 @@ public class MusicNotationEditorUI extends JFrame {
             }
         });
     }
+    
 
     private class Phrase extends JPanel {
         private static final int LINE_GAP = 15;
@@ -179,12 +197,20 @@ public class MusicNotationEditorUI extends JFrame {
         private static final int HEIGHT = (2 * STAFF_HEIGHT) + MARGIN;
         private static final int MEASURE_WIDTH = WIDTH / 4;
 
+        private PitchCalculator pitchCalculator; // Add this for pitch calculation
         private List<MusicSymbol> symbols = new ArrayList<>();
+
+        public Phrase(PitchCalculator pitchCalculator) {
+            this.pitchCalculator = pitchCalculator;
+            // ... other initializations if necessary
+        }
 
         
         public void addSymbol(MusicSymbol symbol, int x, int y) {
             
             symbol.setPosition(x, y); // Set symbol position
+            int pitch = pitchCalculator.calculatePitch(y); // Calculate and set the pitch
+            symbol.setMidiPitch(pitch);
             symbols.add(symbol);
             // Check the coordinates on the staff to define what letter it is
             // Save that information into an array list that saves both the letter and type of note like (G2, Quarter)
@@ -192,6 +218,8 @@ public class MusicNotationEditorUI extends JFrame {
             // Add the beats like if it is a quarter note, add measureBeats += 1
             // Draw the note
             this.repaint();
+            System.out.println("Added symbol at y=" + y + " with MIDI pitch: " + pitch);
+
         }
         
         public List<MusicSymbol> getSymbols() {
@@ -260,6 +288,47 @@ public class MusicNotationEditorUI extends JFrame {
         private void drawEndLines(Graphics g, int x, int y, int width, int height) {
             g.drawLine(x, y, x, y + height);
             g.drawLine(x + width, y, x + width, y + height);
+        }
+
+
+        public void playSymbols() {
+            try {
+                Synthesizer synthesizer = MidiSystem.getSynthesizer();
+                synthesizer.open();
+                final MidiChannel[] channels = synthesizer.getChannels();
+                MidiChannel channel = channels[0]; // Use the first channel
+                
+                // Volume and instrument can be adjusted here
+                int velocity = 80; // Volume (0-127)
+                channel.programChange(0); // 0 is a Piano, change as needed
+        
+                new Thread(() -> {
+                    try {
+                        for (MusicSymbol symbol : symbols) {
+                            int pitch = symbol.getMidiPitch();
+                            double duration = symbol.getDuration();
+                            
+                            System.out.println("Playing " + symbol.getClass().getSimpleName() + 
+                            ": Pitch " + pitch + ", Duration " + duration + " beats");
+ 
+                            // Note on
+                            channel.noteOn(pitch, velocity);
+                            // Sleep to simulate note duration (convert duration to milliseconds)
+                            Thread.sleep((long) (duration * 500)); // Adjust timing as necessary
+                            
+                            // Note off
+                            channel.noteOff(pitch);
+                        }
+                        synthesizer.close();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        System.err.println("Playback thread interrupted");
+                    }
+                }).start();
+        
+            } catch (MidiUnavailableException e) {
+                System.err.println("MIDI device not available");
+            }
         }
     }
 }

@@ -8,6 +8,8 @@ class HalfNoteSymbol extends MusicSymbol {
         super(3);
         this.position.x = x;
         this.position.y = y;
+        setDuration(2.0); 
+
     }
 
     @Override

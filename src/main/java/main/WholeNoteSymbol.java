@@ -8,6 +8,8 @@ class WholeNoteSymbol extends MusicSymbol {
         super(2);
         this.position.x = x;
         this.position.y = y;
+        setDuration(4.0); // A whole note's duration is 4 beats
+
     }
 
     @Override
@@ -23,4 +25,5 @@ class WholeNoteSymbol extends MusicSymbol {
     protected MusicSymbol clone() {
         return new WholeNoteSymbol(this.position.x, this.position.y);
     }
+
 }

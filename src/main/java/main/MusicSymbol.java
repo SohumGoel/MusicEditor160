@@ -14,10 +14,30 @@ import javax.swing.border.MatteBorder;
         protected int yOffset;
         protected Point position = new Point();
 
+        protected int midiPitch; // MIDI pitch number, 60 = Middle C (C4)
+        protected double duration; // Duration in beats, 4 = Whole note, 1 = Quarter note, etc.
+        
+        // Add getters and setters for these properties
+        public int getMidiPitch() {
+            return midiPitch;
+        }
+        
+        public void setMidiPitch(int midiPitch) {
+            this.midiPitch = midiPitch;
+        }
+        
+        public double getDuration() {
+            return duration;
+        }
+        
+        public void setDuration(double duration) {
+            this.duration = duration;
+        }
+
         public MusicSymbol(int type) {
             this.type = type;
             setPreferredSize(new Dimension(40, 40));
-            setBorder(new MatteBorder(2, 2, 2, 2, Color.BLUE));
+            setBorder(new MatteBorder(2, 2, 2, 2, Color.DARK_GRAY));
         }
 
         @Override

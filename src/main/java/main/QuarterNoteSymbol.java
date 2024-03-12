@@ -8,6 +8,7 @@ class QuarterNoteSymbol extends MusicSymbol {
         super(4);
         this.position.x = x;
         this.position.y = y;
+        setDuration(1.0); 
     }
 
     @Override
