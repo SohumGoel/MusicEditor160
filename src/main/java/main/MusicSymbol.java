@@ -4,6 +4,9 @@ import java.awt.Graphics;
 import java.awt.Point;
 
 import javax.swing.JPanel;
+import java.awt.Color;
+import javax.swing.border.MatteBorder;
+
 
     public abstract class MusicSymbol extends JPanel {
         protected int type;
@@ -13,7 +16,8 @@ import javax.swing.JPanel;
 
         public MusicSymbol(int type) {
             this.type = type;
-            setPreferredSize(new Dimension(50, 50));
+            setPreferredSize(new Dimension(40, 40));
+            setBorder(new MatteBorder(2, 2, 2, 2, Color.BLUE));
         }
 
         @Override

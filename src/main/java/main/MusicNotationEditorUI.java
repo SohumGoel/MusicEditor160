@@ -88,17 +88,17 @@ public class MusicNotationEditorUI extends JFrame {
 
     private void initSymbolPanel() {
         symbolPanel = new JPanel();
-        symbolPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        symbolPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 8, 8));
         symbolPanel.setBorder(BorderFactory.createEmptyBorder(15, 10, 10, 10));
         addToSymbolPanel();
         addSymbolPanelListener();
     }
 
     private void addToSymbolPanel() {
-        symbolPanel.add(new WholeNoteSymbol(0,10));
-        symbolPanel.add(new HalfNoteSymbol(0,10));
-        symbolPanel.add(new QuarterNoteSymbol(0,10));
-        symbolPanel.add(new EighthNoteSymbol(0,10));
+        symbolPanel.add(new WholeNoteSymbol(10,10));
+        symbolPanel.add(new HalfNoteSymbol(10,15));
+        symbolPanel.add(new QuarterNoteSymbol(10,15));
+        symbolPanel.add(new EighthNoteSymbol(10,15));
     }
 
     // TO DO: refactor to be of 5 lines
