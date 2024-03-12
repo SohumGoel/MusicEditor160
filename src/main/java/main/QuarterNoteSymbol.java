@@ -6,17 +6,22 @@ import java.awt.geom.Ellipse2D;
 class QuarterNoteSymbol extends MusicSymbol {
     public QuarterNoteSymbol() {
         super(4);
+        
     }
 
     @Override
     protected void drawSymbol(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.fill(new Ellipse2D.Double(10, 10, 20, 15));
-        g2d.drawLine(30, 17, 30, -20);
+        Graphics2D g2d = (Graphics2D) g.create();
+        this.xOffset = this.position.x;
+        this.yOffset = this.position.y;
+        g2d.fill(new Ellipse2D.Double(xOffset, yOffset, 20, 15));
+        g2d.drawLine(xOffset + 20, yOffset + 7, xOffset + 20, yOffset - 10);
     }
 
     @Override
     protected MusicSymbol clone() {
-        return new QuarterNoteSymbol();
+        QuarterNoteSymbol clonedSymbol = new QuarterNoteSymbol();
+        clonedSymbol.setPosition(this.position.x, this.position.y); // Copy position
+        return clonedSymbol;
     }
 }

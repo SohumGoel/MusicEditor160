@@ -16,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class MusicNotationEditorUI extends JFrame {
     private JPanel staffPanel;
@@ -56,15 +57,25 @@ public class MusicNotationEditorUI extends JFrame {
         staffPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (selectedSymbol != null) {
-                    // Determine which StaffPanel is clicked
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
+                    if (comp instanceof Phrase) {
+                        Phrase phrase = (Phrase) comp;
+                        for (MusicSymbol symbol : phrase.getSymbols()) {
+                            if (Math.abs(e.getX() - symbol.getPosition().x) <= 21 &&
+                                Math.abs(e.getY() - symbol.getPosition().y) <= 9) {
+                                phrase.removeSymbol(symbol);
+                                break;
+                            }
+                        }
+                    }
+                } else if (selectedSymbol != null && SwingUtilities.isLeftMouseButton(e)) {
                     Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
                     if (comp instanceof Phrase) {
                         Phrase staff = (Phrase) comp;
                         int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
                         int y = e.getY() - comp.getY(); // Adjust Y coordinate relative to staff
                         staff.addSymbol(selectedSymbol.clone(), x, y); // Clone again to keep original
-                        staff.repaint();
                         selectedSymbol = null; // Reset selected symbol
                     }
                 }
@@ -75,13 +86,12 @@ public class MusicNotationEditorUI extends JFrame {
     private void initSymbolPanel() {
         symbolPanel = new JPanel();
         symbolPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        symbolPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        symbolPanel.setBorder(BorderFactory.createEmptyBorder(15, 10, 10, 10));
         addToSymbolPanel();
         addSymbolPanelListener();
     }
 
     private void addToSymbolPanel() {
-        symbolPanel.add(new TrebleClefSymbol());
         symbolPanel.add(new WholeNoteSymbol());
         symbolPanel.add(new HalfNoteSymbol());
         symbolPanel.add(new QuarterNoteSymbol());
@@ -178,6 +188,16 @@ public class MusicNotationEditorUI extends JFrame {
             // Check that the amount of beats has not exceeded measureBeats of 4
             // Add the beats like if it is a quarter note, add measureBeats += 1
             // Draw the note
+            this.repaint();
+        }
+        
+        public List<MusicSymbol> getSymbols() {
+            return symbols;
+        }
+
+        public void removeSymbol(MusicSymbol symbolToRemove) {
+            System.out.println("Remove!!!");
+            symbols.remove(symbolToRemove);
             this.repaint();
         }
 

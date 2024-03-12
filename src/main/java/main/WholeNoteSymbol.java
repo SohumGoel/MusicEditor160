@@ -11,14 +11,13 @@ class WholeNoteSymbol extends MusicSymbol {
     @Override
     protected void drawSymbol(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
-    // Use symbol's position for drawing
-        int drawX = this.position.x ; // Adjust the 10 to position the note correctly relative to its selection point
-        int drawY = this.position.y ; // Adjust the 10 to position the note correctly on the staff line
+        this.xOffset = this.position.x;
+        this.yOffset = this.position.y;
 
-        g2d.fill(new Ellipse2D.Double(drawX, drawY, 20, 15));
+        g2d.fill(new Ellipse2D.Double(xOffset, yOffset, 20, 15));
         g2d.setColor(getBackground());
-        g2d.fill(new Ellipse2D.Double(drawX + 2, drawY + 2, 16, 11));
-        g2d.dispose(); // Dispose of the graphics context copy
+        g2d.fill(new Ellipse2D.Double(xOffset + 2, yOffset + 2, 16, 11));
+        g2d.dispose();
     }
 
     @Override

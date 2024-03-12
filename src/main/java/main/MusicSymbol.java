@@ -30,6 +30,10 @@ import javax.swing.JPanel;
             return this.position;
         }
 
+        public int getType() {
+            return this.type;
+        }
+
         protected abstract void drawSymbol(Graphics g);
         protected abstract MusicSymbol clone();
     }

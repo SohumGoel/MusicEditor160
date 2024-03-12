@@ -12,14 +12,20 @@ class EighthNoteSymbol extends MusicSymbol {
     @Override
     protected void drawSymbol(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.fill(new Ellipse2D.Double(10, 10, 20, 15));
-        g2d.drawLine(30, 17, 30, -20);
+        this.xOffset = this.position.x;
+        this.yOffset = this.position.y;
+
+        g2d.fill(new Ellipse2D.Double(xOffset, yOffset, 20, 15));
+        g2d.drawLine(xOffset + 20, yOffset + 7, xOffset + 20, yOffset - 10);
         g2d.setStroke(new BasicStroke(4));
-        g2d.drawLine(30,1,45,2);
+        g2d.drawLine(xOffset + 20, yOffset-9, xOffset + 35, yOffset-8);
+        g2d.setStroke(new BasicStroke(1));
     }
 
     @Override
     protected MusicSymbol clone() {
-        return new EighthNoteSymbol();
+        EighthNoteSymbol clonedSymbol = new EighthNoteSymbol();
+        clonedSymbol.setPosition(this.position.x, this.position.y); // Copy position
+        return clonedSymbol;
     }
 }

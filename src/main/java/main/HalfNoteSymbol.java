@@ -11,12 +11,16 @@ class HalfNoteSymbol extends MusicSymbol {
     @Override
     protected void drawSymbol(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.draw(new Ellipse2D.Double(10, 10, 20, 15));
-        g2d.drawLine(30, 17, 30, -20);
+        this.xOffset = this.position.x;
+        this.yOffset = this.position.y;
+        g2d.draw(new Ellipse2D.Double(xOffset, yOffset, 20, 15));
+        g2d.drawLine(xOffset + 20, yOffset + 7, xOffset + 20, yOffset - 10);
     }
 
     @Override
     protected MusicSymbol clone() {
-        return new HalfNoteSymbol();
+        HalfNoteSymbol clonedSymbol = new HalfNoteSymbol();
+        clonedSymbol.setPosition(this.position.x, this.position.y);
+        return clonedSymbol;
     }
 }
