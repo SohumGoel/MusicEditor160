@@ -3,8 +3,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -92,13 +95,13 @@ public class MusicNotationEditorUI extends JFrame {
     }
 
     private void addToSymbolPanel() {
-        symbolPanel.add(new WholeNoteSymbol());
-        symbolPanel.add(new HalfNoteSymbol());
-        symbolPanel.add(new QuarterNoteSymbol());
-        symbolPanel.add(new EighthNoteSymbol());
+        symbolPanel.add(new WholeNoteSymbol(0,10));
+        symbolPanel.add(new HalfNoteSymbol(0,10));
+        symbolPanel.add(new QuarterNoteSymbol(0,10));
+        symbolPanel.add(new EighthNoteSymbol(0,10));
     }
 
-    // TO DO: refactor to be of less lines
+    // TO DO: refactor to be of 5 lines
     private void addSymbolPanelListener() {
         symbolPanel.addMouseListener(new MouseAdapter() {
             @Override
@@ -174,7 +177,7 @@ public class MusicNotationEditorUI extends JFrame {
         private static final int WIDTH = 720;
         private static final int STAFF_HEIGHT = (NUM_LINES - 1) * LINE_GAP;
         private static final int HEIGHT = (2 * STAFF_HEIGHT) + MARGIN;
-        private static final int MEASURE_WIDTH = WIDTH / 5;
+        private static final int MEASURE_WIDTH = WIDTH / 4;
 
         private List<MusicSymbol> symbols = new ArrayList<>();
 
@@ -196,7 +199,6 @@ public class MusicNotationEditorUI extends JFrame {
         }
 
         public void removeSymbol(MusicSymbol symbolToRemove) {
-            System.out.println("Remove!!!");
             symbols.remove(symbolToRemove);
             this.repaint();
         }
@@ -219,6 +221,7 @@ public class MusicNotationEditorUI extends JFrame {
         }
 
         private void drawStaff(Graphics g, int x, int y, int width) {
+            drawStart(g, x, y);
             int lineY = y;
             for (int i = 0; i < NUM_LINES; i++) {
                 g.drawLine(x, lineY, x + width, lineY);
@@ -226,9 +229,29 @@ public class MusicNotationEditorUI extends JFrame {
             }
         }
 
+        private void drawStart(Graphics g, int x, int y) {
+            drawTimeSignature(g, x, y);
+            drawClefs(g,x,y);
+        }
+
+        private void drawClefs(Graphics g, int x, int y) {
+            Image trebleClefImage = Toolkit.getDefaultToolkit().getImage("src\\main\\java\\main\\treble_clef.png");
+            Image bassClefImage = Toolkit.getDefaultToolkit().getImage("src\\main\\java\\main\\bass_clef.png");
+            g.drawImage(trebleClefImage, 25, 15, this);
+            g.drawImage(bassClefImage, 25, 148, this);
+        }
+
+        private void drawTimeSignature(Graphics g, int x, int y) {
+            Font originalFont = g.getFont();
+            Font largerFont = originalFont.deriveFont(Font.BOLD, 30f);
+            g.setFont(largerFont);
+            g.drawString("4", x + 45, y + 27); 
+            g.drawString("4", x + 45, y + 55);
+        }
+
         private void drawMeasure(Graphics g, int x, int y, int height) {
             int lineX = x;
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 5; i++) {
                 g.drawLine(lineX, y, lineX, y + height);
                 lineX += MEASURE_WIDTH;
             }

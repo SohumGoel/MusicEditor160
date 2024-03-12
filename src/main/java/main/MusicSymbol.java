@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
         public MusicSymbol(int type) {
             this.type = type;
-            setPreferredSize(new Dimension(50, 50)); // Adjust size as needed
+            setPreferredSize(new Dimension(50, 50));
         }
 
         @Override

@@ -3,29 +3,26 @@ import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
-
+// Make even smaller? 8 eighth notes do not fit
 class EighthNoteSymbol extends MusicSymbol {
-    public EighthNoteSymbol() {
+    public EighthNoteSymbol(int x, int y) {
         super(5);
+        this.position.x = x;
+        this.position.y = y;
     }
 
     @Override
     protected void drawSymbol(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        this.xOffset = this.position.x;
-        this.yOffset = this.position.y;
-
-        g2d.fill(new Ellipse2D.Double(xOffset, yOffset, 20, 15));
-        g2d.drawLine(xOffset + 20, yOffset + 7, xOffset + 20, yOffset - 10);
+        g2d.fill(new Ellipse2D.Double(this.position.x, this.position.y, 15, 13));
+        g2d.drawLine(this.position.x + 15, this.position.y + 7, this.position.x + 15, this.position.y - 10);
         g2d.setStroke(new BasicStroke(4));
-        g2d.drawLine(xOffset + 20, yOffset-9, xOffset + 35, yOffset-8);
+        g2d.drawLine(this.position.x + 15, this.position.y-9, this.position.x + 25, this.position.y-8);
         g2d.setStroke(new BasicStroke(1));
     }
 
     @Override
     protected MusicSymbol clone() {
-        EighthNoteSymbol clonedSymbol = new EighthNoteSymbol();
-        clonedSymbol.setPosition(this.position.x, this.position.y); // Copy position
-        return clonedSymbol;
+        return new EighthNoteSymbol(this.position.x, this.position.y);
     }
 }

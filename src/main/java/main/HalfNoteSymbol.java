@@ -4,23 +4,21 @@ import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 
 class HalfNoteSymbol extends MusicSymbol {
-    public HalfNoteSymbol() {
+    public HalfNoteSymbol(int x, int y) {
         super(3);
+        this.position.x = x;
+        this.position.y = y;
     }
 
     @Override
     protected void drawSymbol(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        this.xOffset = this.position.x;
-        this.yOffset = this.position.y;
-        g2d.draw(new Ellipse2D.Double(xOffset, yOffset, 20, 15));
-        g2d.drawLine(xOffset + 20, yOffset + 7, xOffset + 20, yOffset - 10);
+        g2d.draw(new Ellipse2D.Double(this.position.x, this.position.y, 15, 13));
+        g2d.drawLine(this.position.x + 15, this.position.y + 7, this.position.x + 15, this.position.y - 10);
     }
 
     @Override
     protected MusicSymbol clone() {
-        HalfNoteSymbol clonedSymbol = new HalfNoteSymbol();
-        clonedSymbol.setPosition(this.position.x, this.position.y);
-        return clonedSymbol;
+        return new HalfNoteSymbol(this.position.x, this.position.y);
     }
 }
