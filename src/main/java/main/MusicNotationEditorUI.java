@@ -42,7 +42,7 @@ public class MusicNotationEditorUI extends JFrame {
     }
 
     private void initStaffPanel() {
-        PitchCalculator pitchCalculator = new TrebleClefNotePitchCalculator();
+        PitchCalculator pitchCalculator = new PitchCalculator();
 
         staffPanel = new JPanel(new GridLayout(0, 1));
         staffPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
@@ -98,6 +98,8 @@ public class MusicNotationEditorUI extends JFrame {
     private void addToSymbolPanel() {
         addNotesToPanel();
         addDynamicsToPanel();
+        symbolPanel.add(new WholeRestSymbol(10,25));
+        symbolPanel.add(new HalfRestSymbol(10,25));
     }
 
     private void addNotesToPanel() {
@@ -161,10 +163,11 @@ public class MusicNotationEditorUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 isPlaying = !isPlaying;
+                int volume = getVolume();
                 if (isPlaying) {
                     for (Component comp : staffPanel.getComponents()) {
                         if (comp instanceof Phrase) {
-                            ((Phrase) comp).playSymbols();
+                            ((Phrase) comp).playSymbols(volume);
                         }
                     }
                     playPauseButton.setText("Pause");
@@ -181,6 +184,38 @@ public class MusicNotationEditorUI extends JFrame {
 
             }
         });
+    }
+
+    private int getVolume() {
+        int volume = 80;
+        boolean dynamicFound = false;
+        for (Component comp : staffPanel.getComponents()) {
+            if (comp instanceof Phrase) {
+                for (MusicSymbol symbol : ((Phrase) comp).getSymbols()) {
+                    if (symbol instanceof PianoSymbol || symbol instanceof ForteSymbol ||
+                            symbol instanceof MFSymbol || symbol instanceof MPSymbol) {
+                        volume = checkDynamic(symbol);
+                        dynamicFound = true;
+                        break;
+                    }
+                }
+                if (dynamicFound) break;
+            }
+        }
+        return volume;
+    }
+
+    private int checkDynamic(MusicSymbol symbol) {
+        if (symbol instanceof PianoSymbol) {
+            return 40;
+        } else if (symbol instanceof ForteSymbol) {
+            return 120;
+        } else if (symbol instanceof MFSymbol) {
+            return 100;
+        } else if (symbol instanceof MPSymbol) {
+            return 60;
+        }
+        return 80;
     }
 
 }

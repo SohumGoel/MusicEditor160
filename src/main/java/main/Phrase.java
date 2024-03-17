@@ -23,6 +23,7 @@ public class Phrase extends JPanel {
 
     private PitchCalculator pitchCalculator; // Add this for pitch calculation
     private List<MusicSymbol> symbols = new ArrayList<>();
+    private int volume = 80;
 
     public Phrase(PitchCalculator pitchCalculator) {
         this.pitchCalculator = pitchCalculator;
@@ -42,7 +43,7 @@ public class Phrase extends JPanel {
         // Add the beats like if it is a quarter note, add measureBeats += 1
         // Draw the note
         this.repaint();
-        System.out.println("Added symbol at y=" + y + " with MIDI pitch: " + pitch);
+        System.out.println("Added symbol at y=" + y + " with MIDI pitch: " + symbol.getMidiPitch());
 
     }
     
@@ -115,7 +116,8 @@ public class Phrase extends JPanel {
     }
 
 
-    public void playSymbols() {
+    public void playSymbols(int dynamic) {
+        volume = dynamic;
         try {
             Synthesizer synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
@@ -153,8 +155,11 @@ public class Phrase extends JPanel {
                     ": Pitch " + pitch + ", Duration " + duration + " beats");
 
                 // Note on
-                channels[0].noteOn(pitch, checkVelocity());
-                System.out.println("Volume is at " + checkVelocity());
+                if (pitch != 0) {
+                    channels[0].noteOn(pitch, volume);
+                    System.out.println("Volume is at " + volume);
+                }
+                
 
                 // Sleep to simulate note duration (convert duration to milliseconds)
                 try {
@@ -181,9 +186,10 @@ public class Phrase extends JPanel {
                 System.out.println("Playing " + symbol.getClass().getSimpleName() + 
                     ": Pitch " + pitch + ", Duration " + duration + " beats");
 
-                // Note on
-                channels[0].noteOn(pitch, checkVelocity());
-                System.out.println("Volume is at " + checkVelocity());
+                if (pitch != 0) {
+                    channels[0].noteOn(pitch, volume);
+                    System.out.println("Volume is at " + volume);
+                }
 
                 // Sleep to simulate note duration (convert duration to milliseconds)
                 try {
@@ -200,20 +206,5 @@ public class Phrase extends JPanel {
             }
         }
             
-    }
-
-    private int checkVelocity() {
-        for (MusicSymbol symbol : symbols) {
-            if (symbol instanceof PianoSymbol) {
-                return 40;
-            } else if (symbol instanceof ForteSymbol) {
-                return 120;
-            } else if (symbol instanceof MFSymbol) {
-                return 100;
-            } else if (symbol instanceof MPSymbol) {
-                return 60;
-            }
-        }
-        return 80;
     }
 }

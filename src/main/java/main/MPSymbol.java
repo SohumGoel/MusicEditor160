@@ -2,6 +2,7 @@ package main;
 import java.awt.Font;
 import java.awt.Graphics;
 
+
 class MPSymbol extends MusicSymbol {
     public MPSymbol(int x, int y) {
         super(7);

@@ -3,7 +3,7 @@ import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
-// Make even smaller? 8 eighth notes do not fit
+
 class EighthNoteSymbol extends MusicSymbol {
     public EighthNoteSymbol(int x, int y) {
         super(5);
@@ -17,10 +17,27 @@ class EighthNoteSymbol extends MusicSymbol {
     protected void drawSymbol(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.fill(new Ellipse2D.Double(this.position.x, this.position.y, 15, 13));
-        g2d.drawLine(this.position.x + 15, this.position.y + 7, this.position.x + 15, this.position.y - 10);
-        g2d.setStroke(new BasicStroke(4));
-        g2d.drawLine(this.position.x + 15, this.position.y-9, this.position.x + 25, this.position.y-8);
-        g2d.setStroke(new BasicStroke(1));
+        drawStem(g2d);
+    }
+
+    private void drawStem(Graphics2D g) {
+        if ((this.position.y == 15 && this.position.x == 10)) {
+            g.drawLine(this.position.x + 15, this.position.y + 7, this.position.x + 15, this.position.y - 10);
+            g.setStroke(new BasicStroke(4));
+            g.drawLine(this.position.x + 15, this.position.y-9, this.position.x + 25, this.position.y-8);
+            g.setStroke(new BasicStroke(1));
+        } else if ((this.position.y > 46 && this.position.y < 120)
+            || this.position.y > 166) {
+            g.drawLine(this.position.x + 15, this.position.y + 7, this.position.x + 15, this.position.y - 25);
+            g.setStroke(new BasicStroke(5));
+            g.drawLine(this.position.x + 15, this.position.y-24, this.position.x + 25, this.position.y-23);
+            g.setStroke(new BasicStroke(1));
+        } else {
+            g.drawLine(this.position.x, this.position.y + 7, this.position.x, this.position.y + 36);
+            g.setStroke(new BasicStroke(5));
+            g.drawLine(this.position.x + 2, this.position.y + 36, this.position.x + 12, this.position.y + 34);
+            g.setStroke(new BasicStroke(1));
+        }
     }
 
     @Override
