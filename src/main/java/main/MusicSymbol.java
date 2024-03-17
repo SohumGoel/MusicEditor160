@@ -1,10 +1,10 @@
 package main;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 
 import javax.swing.JPanel;
-import java.awt.Color;
 import javax.swing.border.MatteBorder;
 
 
