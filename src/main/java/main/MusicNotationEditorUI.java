@@ -23,8 +23,11 @@ public class MusicNotationEditorUI extends JFrame {
 
     private JButton playPauseButton;
     private JButton stopButton;
-
     private MusicSymbol selectedSymbol;
+
+    private boolean isDragging = false;
+    private MusicSymbol draggingSymbol = null;
+    private Phrase draggingPhrase = null;
 
     public MusicNotationEditorUI() {
         super("Simple Music Notation Editor");
@@ -84,6 +87,57 @@ public class MusicNotationEditorUI extends JFrame {
                     }
                 }
             }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // Identify if a symbol is clicked for dragging
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    for (Component comp : staffPanel.getComponents()) {
+                        if (comp instanceof Phrase) {
+                            Phrase phrase = (Phrase) comp;
+                            for (MusicSymbol symbol : phrase.getSymbols()) {
+                                if (symbol.getBounds().contains(e.getPoint())) {
+                                    draggingSymbol = symbol;
+                                    draggingPhrase = phrase;
+                                    isDragging = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (isDragging && draggingSymbol != null) {
+                    // Finalize drag
+                    int x = e.getX() - draggingPhrase.getX();
+                    int y = e.getY() - draggingPhrase.getY();
+                    draggingSymbol.setPosition(x, y);
+
+                    draggingPhrase.recalculateSymbolPitch(draggingSymbol); // this i public for now
+
+                    draggingPhrase.repaint();
+                    isDragging = false;
+                    draggingSymbol = null;
+                    draggingPhrase = null;
+                }
+            }
+        });
+
+        staffPanel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (isDragging && draggingSymbol != null) {
+                    int x = e.getX() - draggingPhrase.getX();
+                    int y = e.getY() - draggingPhrase.getY();
+                    draggingSymbol.setPosition(x, y);
+                    draggingPhrase.repaint();
+                }
+            }
+            
+
         });
     }
 
@@ -139,7 +193,7 @@ public class MusicNotationEditorUI extends JFrame {
     }
 
     private void initButtons() {
-        playPauseButton = new JButton("Play/Pause");
+        playPauseButton = new JButton("Play");
         stopButton = new JButton("Stop");
     }
 
@@ -170,9 +224,8 @@ public class MusicNotationEditorUI extends JFrame {
                             ((Phrase) comp).playSymbols(volume);
                         }
                     }
-                    playPauseButton.setText("Pause");
+                    // playPauseButton.setText("Pause");
                 } else {
-
                     playPauseButton.setText("Play");
                 }
             }

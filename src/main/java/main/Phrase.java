@@ -46,6 +46,12 @@ public class Phrase extends JPanel {
         System.out.println("Added symbol at y=" + y + " with MIDI pitch: " + symbol.getMidiPitch());
 
     }
+
+    public void recalculateSymbolPitch(MusicSymbol symbol) {
+        int pitch = pitchCalculator.calculatePitch(symbol.getPosition().y);
+        symbol.setMidiPitch(pitch);        
+        System.out.println("position after drag: y = " + symbol.getPosition().y + " with MIDI pitch: " + symbol.getMidiPitch());
+    }
     
     public List<MusicSymbol> getSymbols() {
         return symbols;

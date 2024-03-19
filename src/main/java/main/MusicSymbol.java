@@ -49,6 +49,8 @@ public abstract class MusicSymbol extends JPanel {
 
     public void setPosition(int x, int y) {
         this.position.setLocation(x, y);
+        this.setBounds(x, y, getPreferredSize().width, getPreferredSize().height); // Update bounds for accurate hit detection
+
     }
 
     public Point getPosition() {
