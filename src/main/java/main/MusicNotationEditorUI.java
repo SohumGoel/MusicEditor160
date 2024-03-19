@@ -28,6 +28,7 @@ public class MusicNotationEditorUI extends JFrame {
     private boolean isDragging = false;
     private MusicSymbol draggingSymbol = null;
     private Phrase draggingPhrase = null;
+    private PitchCalculator pitchCalculator;
 
     public MusicNotationEditorUI() {
         super("Simple Music Notation Editor");
@@ -45,7 +46,7 @@ public class MusicNotationEditorUI extends JFrame {
     }
 
     private void initStaffPanel() {
-        PitchCalculator pitchCalculator = new PitchCalculator();
+        this.pitchCalculator = new PitchCalculator();
 
         staffPanel = new JPanel(new GridLayout(0, 1));
         staffPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
@@ -95,8 +96,11 @@ public class MusicNotationEditorUI extends JFrame {
                     for (Component comp : staffPanel.getComponents()) {
                         if (comp instanceof Phrase) {
                             Phrase phrase = (Phrase) comp;
+                            int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
+            int y = e.getY() - comp.getY();
                             for (MusicSymbol symbol : phrase.getSymbols()) {
-                                if (symbol.getBounds().contains(e.getPoint())) {
+                                if (Math.abs(x - symbol.getPosition().x) <= 24 &&
+                                    Math.abs(y - symbol.getPosition().y) <= 10) {
                                     draggingSymbol = symbol;
                                     draggingPhrase = phrase;
                                     isDragging = true;
@@ -116,7 +120,7 @@ public class MusicNotationEditorUI extends JFrame {
                     int y = e.getY() - draggingPhrase.getY();
                     draggingSymbol.setPosition(x, y);
 
-                    draggingPhrase.recalculateSymbolPitch(draggingSymbol); // this i public for now
+                    recalculateSymbolPitch(draggingSymbol); // this i public for now
 
                     draggingPhrase.repaint();
                     isDragging = false;
@@ -136,9 +140,13 @@ public class MusicNotationEditorUI extends JFrame {
                     draggingPhrase.repaint();
                 }
             }
-            
-
         });
+    }
+
+    public void recalculateSymbolPitch(MusicSymbol symbol) {
+        int pitch = pitchCalculator.calculatePitch(symbol.getPosition().y);
+        symbol.setMidiPitch(pitch);        
+        System.out.println("position after drag: y = " + symbol.getPosition().y + " with MIDI pitch: " + symbol.getMidiPitch());
     }
 
     private void initSymbolPanel() {
