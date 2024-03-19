@@ -123,6 +123,9 @@ public class Phrase extends JPanel {
             synthesizer.open();
             final MidiChannel[] channels = synthesizer.getChannels();
 
+            // sort by x position just before playback. Visual representation unaltered.
+            symbols.sort((s1, s2) -> Integer.compare(s1.getPosition().x, s2.getPosition().x)); 
+
             // Use separate threads for left and right hand notes
             Thread leftHandThread = new Thread(() -> playLeftNotes(symbols, channels));
             Thread rightHandThread = new Thread(() -> playRightNotes(symbols, channels));
@@ -154,13 +157,14 @@ public class Phrase extends JPanel {
                 System.out.println("Playing " + symbol.getClass().getSimpleName() + 
                     ": Pitch " + pitch + ", Duration " + duration + " beats");
 
+                System.out.println("x = " + symbol.getPosition().x);
+
                 // Note on
                 if (pitch != 0) {
                     channels[0].noteOn(pitch, volume);
                     System.out.println("Volume is at " + volume);
                 }
                 
-
                 // Sleep to simulate note duration (convert duration to milliseconds)
                 try {
                     Thread.sleep((long) (duration * 500)); // Adjust timing as necessary
@@ -184,7 +188,9 @@ public class Phrase extends JPanel {
                 double duration = symbol.getDuration();
                 
                 System.out.println("Playing " + symbol.getClass().getSimpleName() + 
-                    ": Pitch " + pitch + ", Duration " + duration + " beats");
+                                  ": Pitch " + pitch + ", Duration " + duration + " beats");
+
+                System.out.println("x = " + symbol.getPosition().x);
 
                 if (pitch != 0) {
                     channels[0].noteOn(pitch, volume);
