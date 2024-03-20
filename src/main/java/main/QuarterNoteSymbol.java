@@ -2,8 +2,12 @@ package main;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
+import java.io.Serializable;
 
-class QuarterNoteSymbol extends MusicSymbol {
+
+class QuarterNoteSymbol extends MusicSymbol implements Serializable{
+    private static final long serialVersionUID = 1L;
+
     public QuarterNoteSymbol(int x, int y) {
         super(4);
         this.position.x = x;

@@ -11,8 +11,12 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Synthesizer;
 import javax.swing.JPanel;
+import java.io.Serializable;
 
-public class Phrase extends JPanel {
+
+public class Phrase extends JPanel implements Serializable{
+    private static final long serialVersionUID = 1L;
+
     private static final int LINE_GAP = 15;
     private static final int NUM_LINES = 5;
     private static final int MARGIN = 20;

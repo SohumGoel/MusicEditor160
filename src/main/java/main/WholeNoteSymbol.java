@@ -2,8 +2,10 @@ package main;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
+import java.io.Serializable;
 
-class WholeNoteSymbol extends MusicSymbol {
+
+class WholeNoteSymbol extends MusicSymbol implements Serializable {
     public WholeNoteSymbol(int x, int y) {
         super(2);
         this.position.x = x;

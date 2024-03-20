@@ -1,12 +1,10 @@
 package main;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
@@ -15,22 +13,26 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.util.Map;
+import javax.swing.JFileChooser;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 
 
-public class MusicNotationEditorUI extends JFrame {
-    private JPanel staffPanel;
-    private JPanel controlPanel;
-    private JPanel symbolPanel;
+public class MusicNotationEditorUI extends JFrame{
+    private JPanel staffPanel, controlPanel,symbolPanel;
+    private JButton playPauseButton, stopButton, saveButton, loadButton;
 
-    private JButton playPauseButton;
-    private JButton stopButton;
     private MusicSymbol selectedSymbol;
-
-    private boolean isDragging = false;
-    private boolean isPlaying = false;
-
     private MusicSymbol draggingSymbol = null;
+
+    private boolean isDragging = false, isPlaying = false;
+
     private Phrase draggingPhrase = null;
     private PitchCalculator pitchCalculator;
 
@@ -66,7 +68,6 @@ public class MusicNotationEditorUI extends JFrame {
         staffPanel.addMouseMotionListener(listener);
     }
 
-
     public void handleMouseClicked(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e)) {
             removeSymbolAt(e);
@@ -74,7 +75,7 @@ public class MusicNotationEditorUI extends JFrame {
             addSelectedSymbolAt(e);
         }
     }
-    
+
     public void handleMousePressed(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
             startDraggingSymbol(e);
@@ -85,14 +86,14 @@ public class MusicNotationEditorUI extends JFrame {
         if (isDragging) {
             finalizeDrag(e);
         }
-    }    
-    
+    }
+
     public void handleMouseDragged(MouseEvent e) {
         if (isDragging) {
             updateDragPosition(e);
         }
     }
-    
+
     private void removeSymbolAt(MouseEvent e) {
         Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
         if (comp instanceof Phrase) {
@@ -101,14 +102,14 @@ public class MusicNotationEditorUI extends JFrame {
             int y = e.getY() - comp.getY();
             for (MusicSymbol symbol : phrase.getSymbols()) {
                 if (Math.abs(x - symbol.getPosition().x) <= 24 &&
-                    Math.abs(y - symbol.getPosition().y) <= 10) {
+                        Math.abs(y - symbol.getPosition().y) <= 10) {
                     phrase.removeSymbol(symbol);
                     break;
                 }
             }
         }
     }
-    
+
     private void addSelectedSymbolAt(MouseEvent e) {
         Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
         if (comp instanceof Phrase) {
@@ -119,7 +120,7 @@ public class MusicNotationEditorUI extends JFrame {
             selectedSymbol = null; // Reset selected symbol
         }
     }
-    
+
     private void startDraggingSymbol(MouseEvent e) {
         // initiate drag
         // Identify if a symbol is clicked for dragging
@@ -130,7 +131,7 @@ public class MusicNotationEditorUI extends JFrame {
                 int y = e.getY() - comp.getY();
                 for (MusicSymbol symbol : phrase.getSymbols()) {
                     if (Math.abs(x - symbol.getPosition().x) <= 24 &&
-                        Math.abs(y - symbol.getPosition().y) <= 10) {
+                            Math.abs(y - symbol.getPosition().y) <= 10) {
                         draggingSymbol = symbol;
                         draggingPhrase = phrase;
                         isDragging = true;
@@ -140,9 +141,9 @@ public class MusicNotationEditorUI extends JFrame {
             }
         }
     }
-    
+
     private void finalizeDrag(MouseEvent e) {
-       // finalize drag and recalculate pitch
+        // finalize drag and recalculate pitch
         int x = e.getX() - draggingPhrase.getX();
         int y = e.getY() - draggingPhrase.getY();
         draggingSymbol.setPosition(x, y);
@@ -153,7 +154,7 @@ public class MusicNotationEditorUI extends JFrame {
         draggingSymbol = null;
         draggingPhrase = null;
     }
-    
+
     private void updateDragPosition(MouseEvent e) {
         // Update position during drag
         int x = e.getX() - draggingPhrase.getX();
@@ -161,14 +162,13 @@ public class MusicNotationEditorUI extends JFrame {
         draggingSymbol.setPosition(x, y);
         draggingPhrase.repaint();
     }
-    
 
     public void recalculateSymbolPitch(MusicSymbol symbol) {
         int pitch = pitchCalculator.calculatePitch(symbol.getPosition().y);
-        symbol.setMidiPitch(pitch);        
-        System.out.println("position after drag: y = " + symbol.getPosition().y + " with MIDI pitch: " + symbol.getMidiPitch());
+        symbol.setMidiPitch(pitch);
+        System.out.println(
+                "position after drag: y = " + symbol.getPosition().y + " with MIDI pitch: " + symbol.getMidiPitch());
     }
-
 
     private void initSymbolPanel() {
         symbolPanel = new JPanel();
@@ -181,24 +181,23 @@ public class MusicNotationEditorUI extends JFrame {
     private void addToSymbolPanel() {
         addNotesToPanel();
         addDynamicsToPanel();
-        symbolPanel.add(new WholeRestSymbol(10,25));
-        symbolPanel.add(new HalfRestSymbol(10,25));
+        symbolPanel.add(new WholeRestSymbol(10, 25));
+        symbolPanel.add(new HalfRestSymbol(10, 25));
     }
 
     private void addNotesToPanel() {
-        symbolPanel.add(new WholeNoteSymbol(10,10));
-        symbolPanel.add(new HalfNoteSymbol(10,15));
-        symbolPanel.add(new QuarterNoteSymbol(10,15));
-        symbolPanel.add(new EighthNoteSymbol(10,15));
+        symbolPanel.add(new WholeNoteSymbol(10, 10));
+        symbolPanel.add(new HalfNoteSymbol(10, 15));
+        symbolPanel.add(new QuarterNoteSymbol(10, 15));
+        symbolPanel.add(new EighthNoteSymbol(10, 15));
     }
 
     private void addDynamicsToPanel() {
-        symbolPanel.add(new PianoSymbol(15,25));
-        symbolPanel.add(new ForteSymbol(17,25));
-        symbolPanel.add(new MPSymbol(5,25));
-        symbolPanel.add(new MFSymbol(5,25));
+        symbolPanel.add(new PianoSymbol(15, 25));
+        symbolPanel.add(new ForteSymbol(17, 25));
+        symbolPanel.add(new MPSymbol(5, 25));
+        symbolPanel.add(new MFSymbol(5, 25));
     }
-
 
     private void addSymbolPanelListener() {
         SymbolPanelListener listener = new SymbolPanelListener(this);
@@ -213,18 +212,21 @@ public class MusicNotationEditorUI extends JFrame {
         }
     }
 
-
     private void initControlPanel() {
         initButtons();
         controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         controlPanel.add(playPauseButton);
         controlPanel.add(stopButton);
+        controlPanel.add(saveButton);
+        controlPanel.add(loadButton);
         setUpActionListeners();
     }
 
     private void initButtons() {
         playPauseButton = new JButton("Play");
         stopButton = new JButton("Stop");
+        saveButton = new JButton("Save");
+        loadButton = new JButton("Load");
     }
 
     private void displayComponents() {
@@ -234,6 +236,7 @@ public class MusicNotationEditorUI extends JFrame {
         add(controlPanel, BorderLayout.SOUTH);
         displayUI();
     }
+
     private void displayUI() {
         pack();
         setLocationRelativeTo(null);
@@ -242,153 +245,102 @@ public class MusicNotationEditorUI extends JFrame {
 
     private void setUpActionListeners() {
         Command playCommand = new PlayCommand(this);
-        //Command stopCommand = new StopCommand(this);
+        Command saveCommand = new SaveCommand(this);
+        Command loadCommand = new LoadCommand(this);
+        // Command stopCommand = new StopCommand(this);
         playPauseButton.addActionListener(e -> playCommand.execute());
-        //stopButton.addActionListener(e -> stopCommand.execute());
+        saveButton.addActionListener(e -> saveCommand.execute());
+        loadButton.addActionListener(e -> loadCommand.execute());
+        // stopButton.addActionListener(e -> stopCommand.execute());
     }
+
+    protected void saveComposition() {
+        JFileChooser fileChooser = new JFileChooser();
+        int userSelection = fileChooser.showSaveDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileToSave))) {
+                for (Component comp : staffPanel.getComponents()) {
+                    if (comp instanceof Phrase) {
+                        out.writeObject(comp); // Serialize each Phrase
+                    }
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    protected void loadComposition() {
+        JFileChooser fileChooser = new JFileChooser();
+        int userSelection = fileChooser.showOpenDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToLoad = fileChooser.getSelectedFile();
+            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileToLoad))) {
+                staffPanel.removeAll();
+                while (true) {
+                    try {
+                        Phrase phrase = (Phrase) in.readObject();
+                        staffPanel.add(phrase);
+                    } catch (EOFException ex) {
+                        break; // End of file reached
+                    }
+                }
+                staffPanel.revalidate();
+                staffPanel.repaint();
+            } catch (IOException | ClassNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
 
     protected void togglePlayback() {
-    int volume = getVolume();
-    if (!isPlaying) {
-        isPlaying = true;
-        for (Component comp : staffPanel.getComponents()) {
-            if (comp instanceof Phrase) {
-                ((Phrase) comp).playSymbols(volume);
-            }
-        }
-        isPlaying = false;
-        // playPauseButton.setText("Pause");
-    } else {
-        //isPlaying = false;
-        playPauseButton.setText("Play");
-    }
-}
-
-private int getVolume() {
-    int volume = 80;
-    boolean dynamicFound = false;
-    for (Component comp : staffPanel.getComponents()) {
-        if (comp instanceof Phrase) {
-            for (MusicSymbol symbol : ((Phrase) comp).getSymbols()) {
-                if (symbol instanceof PianoSymbol || symbol instanceof ForteSymbol ||
-                    symbol instanceof MFSymbol || symbol instanceof MPSymbol) {
-                    volume = checkDynamic(symbol);
-                    dynamicFound = true;
-                    break;
+        int volume = getVolume();
+        if (!isPlaying) {
+            isPlaying = true;
+            for (Component comp : staffPanel.getComponents()) {
+                if (comp instanceof Phrase) {
+                    ((Phrase) comp).playSymbols(volume);
                 }
             }
-            if (dynamicFound) break;
+            isPlaying = false;
+            // playPauseButton.setText("Pause");
+        } else {
+            // isPlaying = false;
+            playPauseButton.setText("Play");
         }
     }
-    return volume;
-}
 
-private int checkDynamic(MusicSymbol symbol) {
-    return DYNAMIC_VALUES.getOrDefault(symbol.getClass(), 80);
-}
+    private int getVolume() {
+        int volume = 80;
+        boolean dynamicFound = false;
+        for (Component comp : staffPanel.getComponents()) {
+            if (comp instanceof Phrase) {
+                for (MusicSymbol symbol : ((Phrase) comp).getSymbols()) {
+                    if (symbol instanceof PianoSymbol || symbol instanceof ForteSymbol ||
+                            symbol instanceof MFSymbol || symbol instanceof MPSymbol) {
+                        volume = checkDynamic(symbol);
+                        dynamicFound = true;
+                        break;
+                    }
+                }
+                if (dynamicFound)
+                    break;
+            }
+        }
+        return volume;
+    }
 
-private static final Map<Class<? extends MusicSymbol>, Integer> DYNAMIC_VALUES = Map.of(
-    PianoSymbol.class, 40,
-    ForteSymbol.class, 120,
-    MFSymbol.class, 100,
-    MPSymbol.class, 60
-);
+    private int checkDynamic(MusicSymbol symbol) {
+        return DYNAMIC_VALUES.getOrDefault(symbol.getClass(), 80);
+    }
 
-// private int checkDynamic(MusicSymbol symbol) {
-//     if (symbol instanceof PianoSymbol) {
-//         return 40;
-//     } else if (symbol instanceof ForteSymbol) {
-//         return 120;
-//     } else if (symbol instanceof MFSymbol) {
-//         return 100;
-//     } else if (symbol instanceof MPSymbol) {
-//         return 60;
-//     }
-//     return 80;
-// }
-
-
-    // private void setUpActionListeners() {
-    //     playPauseButton.addActionListener(new ActionListener() {
-    //         private boolean isPlaying = false;
-
-    //         @Override
-    //         public void actionPerformed(ActionEvent e) {
-    //             int volume = getVolume();
-    //             if (!isPlaying) {
-    //                 isPlaying = true;
-    //                 for (Component comp : staffPanel.getComponents()) {
-    //                     if (comp instanceof Phrase) {
-    //                         ((Phrase) comp).playSymbols(volume);
-    //                     }
-    //                 }
-    //                 isPlaying = false;
-    //                 // playPauseButton.setText("Pause");
-    //             } else {
-    //                 //isPlaying = false;
-    //                 playPauseButton.setText("Play");
-    //             }
-    //         }
-    //     });
-
-    //     stopButton.addActionListener(new ActionListener() {
-    //         @Override
-    //         public void actionPerformed(ActionEvent e) {
-
-    //         }
-    //     });
-    // }
+    private static final Map<Class<? extends MusicSymbol>, Integer> DYNAMIC_VALUES = Map.of(
+        PianoSymbol.class, 40,
+        ForteSymbol.class, 120,
+        MFSymbol.class, 100,
+        MPSymbol.class, 60
+    );
 
 }
-
-//     MouseAdapter mouseHandler = new MouseAdapter() {
-    //         @Override
-    //         public void mouseClicked(MouseEvent e) {
-    //             if (SwingUtilities.isRightMouseButton(e)) {
-    //                 removeSymbolAt(e);
-    //             } else if (selectedSymbol != null && SwingUtilities.isLeftMouseButton(e)) {
-    //                 addSelectedSymbolAt(e);
-    //             }
-    //         }
-    
-    //         @Override
-    //         public void mousePressed(MouseEvent e) {
-    //             if (SwingUtilities.isLeftMouseButton(e)) {
-    //                 startDraggingSymbol(e);
-    //             }
-    //         }
-    
-    //         @Override
-    //         public void mouseReleased(MouseEvent e) {
-    //             if (isDragging) {
-    //                 finalizeDrag(e);
-    //             }
-    //         }
-    
-    //         @Override
-    //         public void mouseDragged(MouseEvent e) {
-    //             if (isDragging) {
-    //                 updateDragPosition(e);
-    //             }
-    //         }
-    //     };
-    
-    //     staffPanel.addMouseListener(mouseHandler);
-    //     staffPanel.addMouseMotionListener(mouseHandler);
-    // }
-
-
-    // // TO DO: refactor to be of 5 lines
-    // private void addSymbolPanelListener() {
-    //     symbolPanel.addMouseListener(new MouseAdapter() {
-    //         @Override
-    //         public void mousePressed(MouseEvent e) {
-    //             super.mousePressed(e);
-    //             Component comp = symbolPanel.getComponentAt(e.getX(), e.getY());
-    //             if (comp instanceof MusicSymbol) {
-    //                 MusicSymbol symbol = (MusicSymbol) comp;
-    //                 selectedSymbol = symbol.clone();
-    //             }
-    //         }
-    //     });
-    // }

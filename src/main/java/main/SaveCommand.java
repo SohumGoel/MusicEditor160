@@ -1,15 +1,14 @@
 package main;
 
-
-public class PlayCommand implements Command{
+public class SaveCommand implements Command{
     private final MusicNotationEditorUI editorUI;
 
-    public PlayCommand(MusicNotationEditorUI editorUI) {
+    public SaveCommand(MusicNotationEditorUI editorUI) {
         this.editorUI = editorUI;
     }
 
     @Override
     public void execute() {
-        editorUI.togglePlayback();
+        editorUI.saveComposition();
     }
 }

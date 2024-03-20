@@ -4,8 +4,14 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 import java.util.Map;
+import java.io.Serializable;
+
+
 // PitchCalculator.java
-public class PitchCalculator {
+public class PitchCalculator implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+
     //private final Map<Integer, Integer> pitchMap;
     private final TreeMap<Integer, Integer> pitchMap;
 

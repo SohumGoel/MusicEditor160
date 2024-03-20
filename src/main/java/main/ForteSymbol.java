@@ -1,8 +1,12 @@
 package main;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.io.Serializable;
 
-class ForteSymbol extends MusicSymbol {
+
+class ForteSymbol extends MusicSymbol implements Serializable{
+    private static final long serialVersionUID = 1L;
+
     public ForteSymbol(int x, int y) {
         super(6);
         this.position.x = x;

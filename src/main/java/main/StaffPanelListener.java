@@ -2,9 +2,8 @@ package main;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.SwingUtilities;
 
-public class StaffPanelListener extends MouseAdapter {
+public class StaffPanelListener extends MouseAdapter{
     private final MusicNotationEditorUI editorUI;
 
     public StaffPanelListener(MusicNotationEditorUI editorUI) {

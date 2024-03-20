@@ -2,8 +2,12 @@ package main;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
+import java.io.Serializable;
 
-class HalfNoteSymbol extends MusicSymbol {
+
+class HalfNoteSymbol extends MusicSymbol implements Serializable{
+    private static final long serialVersionUID = 1L;
+
     public HalfNoteSymbol(int x, int y) {
         super(3);
         this.position.x = x;

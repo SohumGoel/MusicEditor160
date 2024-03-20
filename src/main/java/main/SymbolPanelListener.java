@@ -3,7 +3,7 @@ package main;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class SymbolPanelListener extends MouseAdapter {
+public class SymbolPanelListener extends MouseAdapter{
     private final MusicNotationEditorUI editorUI;
 
     public SymbolPanelListener(MusicNotationEditorUI editorUI) {
