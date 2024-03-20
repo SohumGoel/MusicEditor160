@@ -3,11 +3,9 @@ import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
-import java.io.Serializable;
 
-class EighthNoteSymbol extends MusicSymbol implements Serializable{
-    private static final long serialVersionUID = 1L;
-
+class EighthNoteSymbol extends MusicSymbol{
+    
     public EighthNoteSymbol(int x, int y) {
         super(5);
         this.position.x = x;

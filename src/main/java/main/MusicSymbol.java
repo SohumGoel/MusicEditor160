@@ -6,13 +6,8 @@ import java.awt.Point;
 
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
-import java.io.Serializable;
-import java.io.Serializable;
 
-
-
-public abstract class MusicSymbol extends JPanel implements Serializable{
-    private static final long serialVersionUID = 1L;
+public abstract class MusicSymbol extends JPanel{
 
     protected int type;
     protected int xOffset;

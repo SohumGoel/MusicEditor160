@@ -342,5 +342,4 @@ public class MusicNotationEditorUI extends JFrame{
         MFSymbol.class, 100,
         MPSymbol.class, 60
     );
-
 }

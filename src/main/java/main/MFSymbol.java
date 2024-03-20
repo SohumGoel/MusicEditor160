@@ -1,12 +1,9 @@
 package main;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.io.Serializable;
 
-
-class MFSymbol extends MusicSymbol implements Serializable{
-    private static final long serialVersionUID = 1L;
-
+class MFSymbol extends MusicSymbol{
+    
     public MFSymbol(int x, int y) {
         super(8);
         this.position.x = x;

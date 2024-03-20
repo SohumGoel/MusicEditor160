@@ -1,10 +1,7 @@
 package main;
 import java.awt.Graphics;
-import java.io.Serializable;
 
-
-public class HalfRestSymbol extends MusicSymbol implements Serializable{
-    private static final long serialVersionUID = 1L;
+public class HalfRestSymbol extends MusicSymbol{
 
     public HalfRestSymbol(int x, int y) {
         super(10);

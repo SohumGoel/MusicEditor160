@@ -1,7 +1,5 @@
 package main;
 import java.awt.Graphics;
-import java.io.Serializable;
-
 
 public class WholeRestSymbol extends MusicSymbol {
     public WholeRestSymbol(int x, int y) {

@@ -1,11 +1,8 @@
 package main;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.io.Serializable;
 
-
-class MPSymbol extends MusicSymbol implements Serializable{
-    private static final long serialVersionUID = 1L;
+class MPSymbol extends MusicSymbol{
 
     public MPSymbol(int x, int y) {
         super(7);
