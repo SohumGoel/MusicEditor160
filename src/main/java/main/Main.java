@@ -8,9 +8,4 @@ public class Main {
     }
 }
 
-
-// fixed order of note additions
-// drag feature
-// refarctor pitch cal for less lines
-
-// safe file
+// save file?

@@ -58,90 +58,197 @@ public class MusicNotationEditorUI extends JFrame {
     }
 
     // TO DO: refactor to be of less lines
+    // private void addStaffPanelListener() {
+    //     staffPanel.addMouseListener(new MouseAdapter() {
+    //         @Override
+    //         public void mouseClicked(MouseEvent e) {
+    //             if (SwingUtilities.isRightMouseButton(e)) {
+    //                 Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
+    //                 if (comp instanceof Phrase) {
+    //                     Phrase phrase = (Phrase) comp;
+    //                     int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
+    //                     int y = e.getY() - comp.getY();
+    //                     for (MusicSymbol symbol : phrase.getSymbols()) {
+    //                         if (Math.abs(x - symbol.getPosition().x) <= 24 &&
+    //                             Math.abs(y - symbol.getPosition().y) <= 10) {
+    //                             phrase.removeSymbol(symbol);
+    //                             break;
+    //                         }
+    //                     }
+    //                 }
+    //             } else if (selectedSymbol != null && SwingUtilities.isLeftMouseButton(e)) {
+    //                 Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
+    //                 if (comp instanceof Phrase) {
+    //                     Phrase staff = (Phrase) comp;
+    //                     int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
+    //                     int y = e.getY() - comp.getY(); // Adjust Y coordinate relative to staff
+
+    //                     staff.addSymbol(selectedSymbol.clone(), x, y); // Clone again to keep original
+    //                     selectedSymbol = null; // Reset selected symbol
+    //                 }
+    //             }
+    //         }
+
+    //         @Override
+    //         public void mousePressed(MouseEvent e) {
+    //             // Identify if a symbol is clicked for dragging
+    //             if (SwingUtilities.isLeftMouseButton(e)) {
+    //                 for (Component comp : staffPanel.getComponents()) {
+    //                     if (comp instanceof Phrase) {
+    //                         Phrase phrase = (Phrase) comp;
+    //                         int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
+    //         int y = e.getY() - comp.getY();
+    //                         for (MusicSymbol symbol : phrase.getSymbols()) {
+    //                             if (Math.abs(x - symbol.getPosition().x) <= 24 &&
+    //                                 Math.abs(y - symbol.getPosition().y) <= 10) {
+    //                                 draggingSymbol = symbol;
+    //                                 draggingPhrase = phrase;
+    //                                 isDragging = true;
+    //                                 break;
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+
+    //         @Override
+    //         public void mouseReleased(MouseEvent e) {
+    //             if (isDragging && draggingSymbol != null) {
+    //                 // Finalize drag
+    //                 int x = e.getX() - draggingPhrase.getX();
+    //                 int y = e.getY() - draggingPhrase.getY();
+    //                 draggingSymbol.setPosition(x, y);
+
+    //                 recalculateSymbolPitch(draggingSymbol); // this i public for now
+
+    //                 draggingPhrase.repaint();
+    //                 isDragging = false;
+    //                 draggingSymbol = null;
+    //                 draggingPhrase = null;
+    //             }
+    //         }
+    //     });
+
+    //     staffPanel.addMouseMotionListener(new MouseAdapter() {
+    //         @Override
+    //         public void mouseDragged(MouseEvent e) {
+    //             if (isDragging && draggingSymbol != null) {
+    //                 int x = e.getX() - draggingPhrase.getX();
+    //                 int y = e.getY() - draggingPhrase.getY();
+    //                 draggingSymbol.setPosition(x, y);
+    //                 draggingPhrase.repaint();
+    //             }
+    //         }
+    //     });
+    // }
+
     private void addStaffPanelListener() {
-        staffPanel.addMouseListener(new MouseAdapter() {
+        MouseAdapter mouseHandler = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
-                    if (comp instanceof Phrase) {
-                        Phrase phrase = (Phrase) comp;
-                        int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
-                        int y = e.getY() - comp.getY();
-                        for (MusicSymbol symbol : phrase.getSymbols()) {
-                            if (Math.abs(x - symbol.getPosition().x) <= 24 &&
-                                Math.abs(y - symbol.getPosition().y) <= 10) {
-                                phrase.removeSymbol(symbol);
-                                break;
-                            }
-                        }
-                    }
+                    removeSymbolAt(e);
                 } else if (selectedSymbol != null && SwingUtilities.isLeftMouseButton(e)) {
-                    Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
-                    if (comp instanceof Phrase) {
-                        Phrase staff = (Phrase) comp;
-                        int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
-                        int y = e.getY() - comp.getY(); // Adjust Y coordinate relative to staff
-
-                        staff.addSymbol(selectedSymbol.clone(), x, y); // Clone again to keep original
-                        selectedSymbol = null; // Reset selected symbol
-                    }
+                    addSelectedSymbolAt(e);
                 }
             }
-
+    
             @Override
             public void mousePressed(MouseEvent e) {
-                // Identify if a symbol is clicked for dragging
                 if (SwingUtilities.isLeftMouseButton(e)) {
-                    for (Component comp : staffPanel.getComponents()) {
-                        if (comp instanceof Phrase) {
-                            Phrase phrase = (Phrase) comp;
-                            int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
+                    startDraggingSymbol(e);
+                }
+            }
+    
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (isDragging) {
+                    finalizeDrag(e);
+                }
+            }
+    
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (isDragging) {
+                    updateDragPosition(e);
+                }
+            }
+        };
+    
+        staffPanel.addMouseListener(mouseHandler);
+        staffPanel.addMouseMotionListener(mouseHandler);
+    }
+    
+    private void removeSymbolAt(MouseEvent e) {
+        Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
+        if (comp instanceof Phrase) {
+            Phrase phrase = (Phrase) comp;
+            int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
             int y = e.getY() - comp.getY();
-                            for (MusicSymbol symbol : phrase.getSymbols()) {
-                                if (Math.abs(x - symbol.getPosition().x) <= 24 &&
-                                    Math.abs(y - symbol.getPosition().y) <= 10) {
-                                    draggingSymbol = symbol;
-                                    draggingPhrase = phrase;
-                                    isDragging = true;
-                                    break;
-                                }
-                            }
-                        }
+            for (MusicSymbol symbol : phrase.getSymbols()) {
+                if (Math.abs(x - symbol.getPosition().x) <= 24 &&
+                    Math.abs(y - symbol.getPosition().y) <= 10) {
+                    phrase.removeSymbol(symbol);
+                    break;
+                }
+            }
+        }
+    }
+    
+    private void addSelectedSymbolAt(MouseEvent e) {
+        Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
+        if (comp instanceof Phrase) {
+            Phrase staff = (Phrase) comp;
+            int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
+            int y = e.getY() - comp.getY(); // Adjust Y coordinate relative to staff
+            staff.addSymbol(selectedSymbol.clone(), x, y); // Clone again to keep original
+            selectedSymbol = null; // Reset selected symbol
+        }
+    }
+    
+    private void startDraggingSymbol(MouseEvent e) {
+        // initiate drag
+        // Identify if a symbol is clicked for dragging
+        for (Component comp : staffPanel.getComponents()) {
+            if (comp instanceof Phrase) {
+                Phrase phrase = (Phrase) comp;
+                int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
+                int y = e.getY() - comp.getY();
+                for (MusicSymbol symbol : phrase.getSymbols()) {
+                    if (Math.abs(x - symbol.getPosition().x) <= 24 &&
+                        Math.abs(y - symbol.getPosition().y) <= 10) {
+                        draggingSymbol = symbol;
+                        draggingPhrase = phrase;
+                        isDragging = true;
+                        break;
                     }
                 }
             }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (isDragging && draggingSymbol != null) {
-                    // Finalize drag
-                    int x = e.getX() - draggingPhrase.getX();
-                    int y = e.getY() - draggingPhrase.getY();
-                    draggingSymbol.setPosition(x, y);
-
-                    recalculateSymbolPitch(draggingSymbol); // this i public for now
-
-                    draggingPhrase.repaint();
-                    isDragging = false;
-                    draggingSymbol = null;
-                    draggingPhrase = null;
-                }
-            }
-        });
-
-        staffPanel.addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (isDragging && draggingSymbol != null) {
-                    int x = e.getX() - draggingPhrase.getX();
-                    int y = e.getY() - draggingPhrase.getY();
-                    draggingSymbol.setPosition(x, y);
-                    draggingPhrase.repaint();
-                }
-            }
-        });
+        }
     }
+    
+    private void finalizeDrag(MouseEvent e) {
+       // finalize drag and recalculate pitch
+        int x = e.getX() - draggingPhrase.getX();
+        int y = e.getY() - draggingPhrase.getY();
+        draggingSymbol.setPosition(x, y);
+        recalculateSymbolPitch(draggingSymbol);
+        draggingPhrase.repaint();
+
+        isDragging = false;
+        draggingSymbol = null;
+        draggingPhrase = null;
+    }
+    
+    private void updateDragPosition(MouseEvent e) {
+        // Update position during drag
+        int x = e.getX() - draggingPhrase.getX();
+        int y = e.getY() - draggingPhrase.getY();
+        draggingSymbol.setPosition(x, y);
+        draggingPhrase.repaint();
+    }
+    
 
     public void recalculateSymbolPitch(MusicSymbol symbol) {
         int pitch = pitchCalculator.calculatePitch(symbol.getPosition().y);
