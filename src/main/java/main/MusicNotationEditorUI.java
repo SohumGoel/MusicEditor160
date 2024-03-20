@@ -224,16 +224,18 @@ public class MusicNotationEditorUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                isPlaying = !isPlaying;
                 int volume = getVolume();
-                if (isPlaying) {
+                if (!isPlaying) {
+                    isPlaying = true;
                     for (Component comp : staffPanel.getComponents()) {
                         if (comp instanceof Phrase) {
                             ((Phrase) comp).playSymbols(volume);
                         }
                     }
+                    isPlaying = false;
                     // playPauseButton.setText("Pause");
                 } else {
+                    //isPlaying = false;
                     playPauseButton.setText("Play");
                 }
             }
