@@ -1,14 +1,14 @@
 // package main;
 
 // public class StopCommand implements Command {
-//     private Phrase phrase;
+//     private final MusicNotationEditorUI editorUI;
 
-//     public StopCommand(Phrase phrase) {
-//         this.phrase = phrase;
+//     public StopCommand(MusicNotationEditorUI editorUI) {
+//         this.editorUI = editorUI;
 //     }
 
 //     @Override
 //     public void execute() {
-//         phrase.stopSymbols(); // Method to stop playback
+//         editorUI.stopPlayback();
 //     }
 // }

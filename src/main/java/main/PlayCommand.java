@@ -1,16 +1,14 @@
-// // PlayCommand.java
+package main;
 
-// package main;
+public class PlayCommand implements Command {
+    private final MusicNotationEditorUI editorUI;
 
-// public class PlayCommand implements Command {
-//     private Phrase phrase;
+    public PlayCommand(MusicNotationEditorUI editorUI) {
+        this.editorUI = editorUI;
+    }
 
-//     public PlayCommand(Phrase phrase) {
-//         this.phrase = phrase;
-//     }
-
-//     @Override
-//     public void execute() {
-//         phrase.playSymbols(); // Method to start playback
-//     }
-// }
+    @Override
+    public void execute() {
+        editorUI.togglePlayback();
+    }
+}
