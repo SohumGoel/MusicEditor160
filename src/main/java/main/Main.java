@@ -7,5 +7,3 @@ public class Main {
         SwingUtilities.invokeLater(() -> new MusicNotationEditorUI());
     }
 }
-
-// save file?

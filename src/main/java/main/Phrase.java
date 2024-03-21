@@ -22,30 +22,22 @@ public class Phrase extends JPanel{
     private static final int HEIGHT = (2 * STAFF_HEIGHT) + MARGIN;
     private static final int MEASURE_WIDTH = WIDTH / 4;
 
-    private PitchCalculator pitchCalculator; // Add this for pitch calculation
+    private PitchCalculator pitchCalculator;
     private List<MusicSymbol> symbols = new ArrayList<>();
     private int volume = 80;
 
     public Phrase(PitchCalculator pitchCalculator) {
         this.pitchCalculator = pitchCalculator;
-        // ... other initializations if necessary
     }
 
     
     public void addSymbol(MusicSymbol symbol, int x, int y) {
-        
-        symbol.setPosition(x, y); // Set symbol position
-        int pitch = pitchCalculator.calculatePitch(y); // Calculate and set the pitch
+        symbol.setPosition(x, y);
+        int pitch = pitchCalculator.calculatePitch(y);
         symbol.setMidiPitch(pitch);
         symbols.add(symbol);
-        // Check the coordinates on the staff to define what letter it is
-        // Save that information into an array list that saves both the letter and type of note like (G2, Quarter)
-        // Check that the amount of beats has not exceeded measureBeats of 4
-        // Add the beats like if it is a quarter note, add measureBeats += 1
-        // Draw the note
         this.repaint();
         System.out.println("Added symbol at y=" + y + " with MIDI pitch: " + symbol.getMidiPitch());
-
     }
     
     public List<MusicSymbol> getSymbols() {
@@ -75,12 +67,12 @@ public class Phrase extends JPanel{
     }
 
     private void drawStaff(Graphics g, int x, int y, int width) {
-        drawStart(g, x, y);
         int lineY = y;
         for (int i = 0; i < NUM_LINES; i++) {
             g.drawLine(x, lineY, x + width, lineY);
             lineY += LINE_GAP;
         }
+        drawStart(g, x, y);
     }
 
     private void drawStart(Graphics g, int x, int y) {
@@ -123,23 +115,13 @@ public class Phrase extends JPanel{
             Synthesizer synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
             final MidiChannel[] channels = synthesizer.getChannels();
-
-            // sort by x position just before playback. Visual representation unaltered.
             symbols.sort((s1, s2) -> Integer.compare(s1.getPosition().x, s2.getPosition().x)); 
-
-            // Use separate threads for left and right hand notes
             Thread leftHandThread = new Thread(() -> playLeftNotes(symbols, channels));
             Thread rightHandThread = new Thread(() -> playRightNotes(symbols, channels));
-
-            // Start both threads concurrently
             leftHandThread.start();
             rightHandThread.start();
-
-            // Wait for both threads to finish
             leftHandThread.join();
             rightHandThread.join();
-
-            // Close the synthesizer after both hands finish playing
             synthesizer.close();
         } catch (MidiUnavailableException e) {
             System.err.println("MIDI device not available");
@@ -159,22 +141,16 @@ public class Phrase extends JPanel{
                     ": Pitch " + pitch + ", Duration " + duration + " beats");
 
                 System.out.println("x = " + symbol.getPosition().x);
-
-                // Note on
                 if (pitch != 0) {
                     channels[0].noteOn(pitch, volume);
                     System.out.println("Volume is at " + volume);
                 }
-                
-                // Sleep to simulate note duration (convert duration to milliseconds)
                 try {
-                    Thread.sleep((long) (duration * 500)); // Adjust timing as necessary
+                    Thread.sleep((long) (duration * 500));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     System.err.println("Playback thread interrupted");
                 }
-                
-                // Note off
                 channels[0].noteOff(pitch);
             } else {
                 continue;
@@ -190,23 +166,18 @@ public class Phrase extends JPanel{
                 
                 System.out.println("Playing " + symbol.getClass().getSimpleName() + 
                                   ": Pitch " + pitch + ", Duration " + duration + " beats");
-
                 System.out.println("x = " + symbol.getPosition().x);
 
                 if (pitch != 0) {
                     channels[0].noteOn(pitch, volume);
                     System.out.println("Volume is at " + volume);
                 }
-
-                // Sleep to simulate note duration (convert duration to milliseconds)
                 try {
-                    Thread.sleep((long) (duration * 500)); // Adjust timing as necessary
+                    Thread.sleep((long) (duration * 500));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     System.err.println("Playback thread interrupted");
                 }
-                
-                // Note off
                 channels[0].noteOff(pitch);
             } else {
                 continue;

@@ -16,18 +16,21 @@ class QuarterNoteSymbol extends MusicSymbol{
     protected void drawSymbol(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.fill(new Ellipse2D.Double(this.position.x, this.position.y, 15, 13));
+        drawLedgerLine(g2d);
         drawStem(g2d);
     }
 
+    private void drawLedgerLine(Graphics2D g) {
+        if(this.position.y == 84 || this.position.y == 122) 
+            g.drawLine(this.position.x-7, this.position.y+6, this.position.x + 22, this.position.y+6);
+    }
+
     private void drawStem(Graphics2D g) {
-        if ((this.position.y == 15 && this.position.x == 10)) {
+        if ((this.position.y == 15 && this.position.x == 10))
             g.drawLine(this.position.x + 15, this.position.y + 7, this.position.x + 15, this.position.y - 10);
-        } else if ((this.position.y > 46 && this.position.y < 120)
-            || this.position.y > 166) {
+        else if ((this.position.y > 46 && this.position.y < 120)|| this.position.y > 166)
             g.drawLine(this.position.x + 15, this.position.y + 7, this.position.x + 15, this.position.y - 25);
-        } else {
-            g.drawLine(this.position.x, this.position.y + 7, this.position.x, this.position.y + 36);
-        }
+        else g.drawLine(this.position.x, this.position.y + 7, this.position.x, this.position.y + 36);
     }
 
     @Override

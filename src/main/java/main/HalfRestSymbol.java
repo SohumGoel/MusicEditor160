@@ -18,7 +18,6 @@ public class HalfRestSymbol extends MusicSymbol{
 
     @Override
     protected MusicSymbol clone() {
-        // Implement clone method for whole rest
         return new HalfRestSymbol(this.position.x, this.position.y);
     }
 }

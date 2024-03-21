@@ -13,11 +13,15 @@ public abstract class MusicSymbol extends JPanel{
     protected int xOffset;
     protected int yOffset;
     protected Point position = new Point();
+    protected int midiPitch;
+    protected double duration;
 
-    protected int midiPitch; // MIDI pitch number, 60 = Middle C (C4)
-    protected double duration; // Duration in beats, 4 = Whole note, 1 = Quarter note, etc.
+    public MusicSymbol(int type) {
+        this.type = type;
+        setPreferredSize(new Dimension(40, 40));
+        setBorder(new MatteBorder(2, 2, 2, 2, Color.DARK_GRAY));
+    }
 
-    // Add getters and setters for these properties
     public int getMidiPitch() {
         return midiPitch;
     }
@@ -35,12 +39,6 @@ public abstract class MusicSymbol extends JPanel{
         this.duration = duration;
     }
 
-    public MusicSymbol(int type) {
-        this.type = type;
-        setPreferredSize(new Dimension(40, 40));
-        setBorder(new MatteBorder(2, 2, 2, 2, Color.DARK_GRAY));
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -49,8 +47,7 @@ public abstract class MusicSymbol extends JPanel{
 
     public void setPosition(int x, int y) {
         this.position.setLocation(x, y);
-        this.setBounds(x, y, getPreferredSize().width, getPreferredSize().height); // Update bounds for accurate hit detection
-
+        this.setBounds(x, y, getPreferredSize().width, getPreferredSize().height);
     }
 
     public Point getPosition() {

@@ -6,14 +6,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import java.util.Map;
-import javax.swing.JFileChooser;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,10 +13,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Map;
 
-
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class MusicNotationEditorUI extends JFrame{
+
     private JPanel staffPanel, controlPanel,symbolPanel;
     private JButton playPauseButton, stopButton, saveButton, loadButton;
 
@@ -55,7 +54,7 @@ public class MusicNotationEditorUI extends JFrame{
         staffPanel = new JPanel(new GridLayout(0, 1));
         staffPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
 
-        for (int i = 0; i < 3; i++) { // Example: 2 pairs of staffs
+        for (int i = 0; i < 3; i++) {
             staffPanel.add(new Phrase(pitchCalculator));
         }
 
@@ -98,7 +97,7 @@ public class MusicNotationEditorUI extends JFrame{
         Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
         if (comp instanceof Phrase) {
             Phrase phrase = (Phrase) comp;
-            int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
+            int x = e.getX() - comp.getX();
             int y = e.getY() - comp.getY();
             for (MusicSymbol symbol : phrase.getSymbols()) {
                 if (Math.abs(x - symbol.getPosition().x) <= 24 &&
@@ -114,20 +113,18 @@ public class MusicNotationEditorUI extends JFrame{
         Component comp = staffPanel.getComponentAt(e.getX(), e.getY());
         if (comp instanceof Phrase) {
             Phrase staff = (Phrase) comp;
-            int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
-            int y = e.getY() - comp.getY(); // Adjust Y coordinate relative to staff
-            staff.addSymbol(selectedSymbol.clone(), x, y); // Clone again to keep original
-            selectedSymbol = null; // Reset selected symbol
+            int x = e.getX() - comp.getX();
+            int y = e.getY() - comp.getY(); 
+            staff.addSymbol(selectedSymbol.clone(), x, y);
+            selectedSymbol = null;
         }
     }
 
     private void startDraggingSymbol(MouseEvent e) {
-        // initiate drag
-        // Identify if a symbol is clicked for dragging
         for (Component comp : staffPanel.getComponents()) {
             if (comp instanceof Phrase) {
                 Phrase phrase = (Phrase) comp;
-                int x = e.getX() - comp.getX(); // Adjust X coordinate relative to staff
+                int x = e.getX() - comp.getX();
                 int y = e.getY() - comp.getY();
                 for (MusicSymbol symbol : phrase.getSymbols()) {
                     if (Math.abs(x - symbol.getPosition().x) <= 24 &&
@@ -143,7 +140,6 @@ public class MusicNotationEditorUI extends JFrame{
     }
 
     private void finalizeDrag(MouseEvent e) {
-        // finalize drag and recalculate pitch
         int x = e.getX() - draggingPhrase.getX();
         int y = e.getY() - draggingPhrase.getY();
         draggingSymbol.setPosition(x, y);
@@ -156,7 +152,6 @@ public class MusicNotationEditorUI extends JFrame{
     }
 
     private void updateDragPosition(MouseEvent e) {
-        // Update position during drag
         int x = e.getX() - draggingPhrase.getX();
         int y = e.getY() - draggingPhrase.getY();
         draggingSymbol.setPosition(x, y);
@@ -181,8 +176,7 @@ public class MusicNotationEditorUI extends JFrame{
     private void addToSymbolPanel() {
         addNotesToPanel();
         addDynamicsToPanel();
-        symbolPanel.add(new WholeRestSymbol(10, 25));
-        symbolPanel.add(new HalfRestSymbol(10, 25));
+        addReststoPanel();
     }
 
     private void addNotesToPanel() {
@@ -197,6 +191,13 @@ public class MusicNotationEditorUI extends JFrame{
         symbolPanel.add(new ForteSymbol(17, 25));
         symbolPanel.add(new MPSymbol(5, 25));
         symbolPanel.add(new MFSymbol(5, 25));
+    }
+
+    private void addReststoPanel() {
+        symbolPanel.add(new WholeRestSymbol(10, 25));
+        symbolPanel.add(new HalfRestSymbol(10, 25));
+        symbolPanel.add(new QuarterRestSymbol(20, 19));
+        symbolPanel.add(new EighthRestSymbol(20, 19));
     }
 
     private void addSymbolPanelListener() {
@@ -262,7 +263,7 @@ public class MusicNotationEditorUI extends JFrame{
             try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileToSave))) {
                 for (Component comp : staffPanel.getComponents()) {
                     if (comp instanceof Phrase) {
-                        out.writeObject(comp); // Serialize each Phrase
+                        out.writeObject(comp);
                     }
                 }
             } catch (IOException ex) {
@@ -283,7 +284,7 @@ public class MusicNotationEditorUI extends JFrame{
                         Phrase phrase = (Phrase) in.readObject();
                         staffPanel.add(phrase);
                     } catch (EOFException ex) {
-                        break; // End of file reached
+                        break;
                     }
                 }
                 staffPanel.revalidate();
@@ -305,9 +306,7 @@ public class MusicNotationEditorUI extends JFrame{
                 }
             }
             isPlaying = false;
-            // playPauseButton.setText("Pause");
         } else {
-            // isPlaying = false;
             playPauseButton.setText("Play");
         }
     }

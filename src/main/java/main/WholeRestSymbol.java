@@ -2,6 +2,7 @@ package main;
 import java.awt.Graphics;
 
 public class WholeRestSymbol extends MusicSymbol {
+    
     public WholeRestSymbol(int x, int y) {
         super(9);
         this.position.x = x;
@@ -17,7 +18,6 @@ public class WholeRestSymbol extends MusicSymbol {
 
     @Override
     protected MusicSymbol clone() {
-        // Implement clone method for whole rest
         return new WholeRestSymbol(this.position.x, this.position.y);
     }
 }

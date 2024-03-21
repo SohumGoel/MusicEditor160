@@ -3,6 +3,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 class PianoSymbol extends MusicSymbol{
+
     private static final long serialVersionUID = 1L;
 
     public PianoSymbol(int x, int y) {
